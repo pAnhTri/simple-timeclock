@@ -1,4 +1,4 @@
-import { HTMLAttributes, useEffect } from "react";
+import { HTMLAttributes, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { ClockFormInput, clockFormSchema } from "@/lib/validators/clockForm";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -7,11 +7,14 @@ import { updateClockInStatus } from "@/lib/util/api/updateClockInStatus";
 import useTimeLogStore from "@/lib/zustand/timelog";
 import useEmployeeStore from "@/lib/zustand/employee";
 import { getTimeLog } from "@/lib/util/api/getTimeLog";
+import { FiLoader } from "react-icons/fi";
 
 const ClockForm = ({
   className,
   ...props
 }: HTMLAttributes<HTMLFormElement>) => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const currentEmployee = useEmployeeStore((state) => state.currentEmployee);
   const employees = useEmployeeStore((state) => state.employees);
   const setCurrentEmployee = useEmployeeStore(
@@ -19,10 +22,6 @@ const ClockForm = ({
   );
 
   const setTimeLogs = useTimeLogStore((state) => state.setTimeLogs);
-
-  useEffect(() => {
-    setCurrentEmployee(employees[0]);
-  }, [employees]);
 
   const {
     register,
@@ -34,6 +33,7 @@ const ClockForm = ({
   });
 
   const onSubmit: SubmitHandler<ClockFormInput> = async (data) => {
+    setIsLoading(true);
     try {
       const updatedEmployee = await updateClockInStatus(
         data.employeeId,
@@ -51,6 +51,8 @@ const ClockForm = ({
       console.log(timeLogs);
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -86,8 +88,22 @@ const ClockForm = ({
           <p className="text-red-500">{errors.employeeId.message}</p>
         )}
       </div>
-      <button type="submit" className="bg-blue-500 text-white p-2 rounded-md">
-        {currentEmployee?.isClockedIn ? "Clock Out" : "Clock In"}
+
+      <button
+        type="submit"
+        className="bg-blue-500 text-white p-2 rounded-md"
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <div className="flex items-center gap-1">
+            <FiLoader className="animate-spin" />
+            <p>Updating...</p>
+          </div>
+        ) : currentEmployee?.isClockedIn ? (
+          "Clock Out"
+        ) : (
+          "Clock In"
+        )}
       </button>
     </form>
   );

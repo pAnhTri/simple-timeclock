@@ -25,12 +25,16 @@ const ClockMain = ({
 }: ClockMainProps) => {
   const [isFlaskConnected, setIsFlaskConnected] = useState(false);
 
+  const setCurrentEmployee = useEmployeeStore(
+    (state) => state.setCurrentEmployee
+  );
   const setTimeLogs = useTimeLogStore((state) => state.setTimeLogs);
   const setEmployees = useEmployeeStore((state) => state.setEmployees);
 
   useEffect(() => {
     setTimeLogs(timeLogs);
     setEmployees(employees);
+    setCurrentEmployee(employees[0]);
 
     // Fetch "/" from flask server
     axios
