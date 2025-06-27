@@ -1,11 +1,12 @@
 "use client";
 
-import { Loader } from "@mantine/core";
+import { Button, Loader } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { Employee as EmployeeType } from "@/lib/mongoDB/model/Employee";
 import { getEmployees } from "@/lib/utils/api";
 import EmployeeSelector from "@/components/EmployeeSelector";
 import Clock from "@/components/Clock";
+import { cn } from "@/lib/utils";
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
@@ -45,6 +46,10 @@ const Home = () => {
     fetchEmployees();
   }, []);
 
+  const handleClockInOut = (): void => {
+    console.log("Clock In/Out");
+  };
+
   if (loading)
     return (
       <div className="flex flex-col justify-center items-center h-screen">
@@ -60,14 +65,29 @@ const Home = () => {
         currentTime={currentTime}
         className="text-4xl font-bold text-center mb-2"
       />
-      <EmployeeSelector
-        employees={employees}
-        selectedEmployee={selectedEmployee}
-        setSelectedEmployee={setSelectedEmployee}
-        classNames={{
-          label: "text-2xl font-bold p-2",
-        }}
-      />
+      <div className="border border-gray-400 rounded-md p-2">
+        <EmployeeSelector
+          employees={employees}
+          selectedEmployee={selectedEmployee}
+          setSelectedEmployee={setSelectedEmployee}
+          className="mb-2"
+          classNames={{
+            label: "text-2xl font-bold p-2",
+          }}
+        />
+        <Button
+          fullWidth
+          size="lg"
+          disabled={!selectedEmployee}
+          color={selectedEmployee?.isClockedIn ? "red" : "green"}
+          classNames={{
+            label: "text-2xl font-bold",
+          }}
+          onClick={handleClockInOut}
+        >
+          {selectedEmployee?.isClockedIn ? "Clock Out" : "Clock In"}
+        </Button>
+      </div>
     </div>
   );
 };
