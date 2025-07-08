@@ -10,6 +10,9 @@
     "test": "jest",
     "test:watch": "jest --watch"
   },
+  "prisma": {
+    "schema": "./prisma/schema/"
+  },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
     "@mantine/core": "^8.1.3",
