@@ -39,3 +39,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+<<<<<<< HEAD
+=======
+
+/src/lib/prisma/generated
+
+prisma/generated/prisma
+>>>>>>> origin/postgres-refactor

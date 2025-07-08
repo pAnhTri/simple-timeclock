@@ -1,0 +1,10 @@
+model Employee {
+  id        String   @id @default(uuid())
+  name      String
+  isClockedIn Boolean @default(false)
+  isOnFirstBreak Boolean @default(false)
+  isOnLunchBreak Boolean @default(false)
+  isOnSecondBreak Boolean @default(false)
+
+  shifts Shift[]
+}

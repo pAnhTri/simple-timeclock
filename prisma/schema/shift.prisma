@@ -1,0 +1,18 @@
+model Shift {
+  id        String   @id @default(uuid())
+  employeeId String
+  employee Employee @relation(fields: [employeeId], references: [id])
+  
+  date DateTime
+  clockInTime DateTime
+  firstBreakStartTime DateTime
+  firstBreakEndTime DateTime
+  lunchStartTime DateTime
+  lunchEndTime DateTime
+  secondBreakStartTime DateTime
+  secondBreakEndTime DateTime
+  clockOutTime DateTime
+
+  @@unique([employeeId, date])
+  @@index([employeeId, date])
+}

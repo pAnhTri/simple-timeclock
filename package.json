@@ -1,11 +1,17 @@
 {
+<<<<<<< HEAD
   "name": "timeclock",
   "version": "0.2.1",
+=======
+  "name": "next-bootstrap",
+  "version": "0.1.0",
+>>>>>>> origin/postgres-refactor
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
+<<<<<<< HEAD
     "lint": "next lint"
   },
   "dependencies": {
@@ -25,16 +31,63 @@
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zod": "^3.25.67",
     "zustand": "^5.0.5"
+=======
+    "lint": "next lint",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "prisma": {
+    "schema": "./prisma/schema/"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.1.1",
+    "@mantine/core": "^8.1.3",
+    "@mantine/hooks": "^8.1.3",
+    "axios": "^1.10.0",
+    "clsx": "^2.1.1",
+    "glob": "^11.0.3",
+    "mongoose": "^8.16.2",
+    "next": "15.3.5",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-hook-form": "^7.60.0",
+    "tailwind-merge": "^3.3.1",
+    "zod": "^3.25.75",
+    "zustand": "^5.0.6"
+>>>>>>> origin/postgres-refactor
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+<<<<<<< HEAD
+=======
+    "@testing-library/dom": "^10.4.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.3.0",
+    "@types/jest": "^30.0.0",
+>>>>>>> origin/postgres-refactor
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
+<<<<<<< HEAD
     "eslint-config-next": "15.3.3",
     "tailwindcss": "^4",
     "typescript": "^5"
+=======
+    "eslint-config-next": "15.3.5",
+    "jest": "^30.0.4",
+    "jest-environment-jsdom": "^30.0.4",
+    "postcss": "^8.5.6",
+    "postcss-preset-mantine": "^1.18.0",
+    "postcss-simple-vars": "^7.0.1",
+    "prisma": "^6.11.1",
+    "tailwindcss": "^4",
+    "ts-node": "^10.9.2",
+    "typescript": "^5"
+  },
+  "overrides": {
+    "glob": "^11.0.3"
+>>>>>>> origin/postgres-refactor
   }
 }
