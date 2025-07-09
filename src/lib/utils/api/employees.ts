@@ -36,3 +36,13 @@ export const updateEmployee = async (
     throw new Error(getAxiosError(error));
   }
 };
+
+export const deleteEmployee = async (employee: Employee): Promise<void> => {
+  try {
+    await axios.delete<Employee>(
+      `/api/employees/${encodeURIComponent(employee.id)}`
+    );
+  } catch (error) {
+    throw new Error(getAxiosError(error));
+  }
+};

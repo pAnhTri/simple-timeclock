@@ -29,7 +29,7 @@ const ClockActionButtons = () => {
   const { error, updateEmployeeShift } = useEmployeeShiftUpdater();
 
   const formatTimeForCopy = (date: Date | null | undefined): string => {
-    if (!date) return "\t";
+    if (!date) return "";
     return format(date, "hh:mm:ss a");
   };
 

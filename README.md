@@ -1,8 +1,26 @@
-# Next.js Full-Stack Template
+# Time Tracker
 
-A comprehensive, production-ready Next.js template with modern tooling and best practices for building full-stack applications.
+A simple and efficient time tracking application for managing employee clock in/out, breaks, and lunch periods. Built with Next.js and PostgreSQL for reliable time tracking and employee management.
 
-## 🚀 Tech Stack
+## 🚀 Features
+
+### Time Tracking
+- **Manual Clock In/Out** - Simple button-based clock in and out functionality
+- **Break Management** - Track two paid breaks per shift with manual start/stop
+- **Lunch Break** - Dedicated lunch break tracking with manual controls
+- **Real-time Status** - Live display of current employee status (clocked in, on break, on lunch)
+
+### Employee Management
+- **Employee CRUD** - Create, read, update, and delete employee records
+- **Employee Selection** - Easy employee switching for time tracking
+- **Employee Settings** - Manage employee names and information
+
+### Data & Analytics
+- **Shift History** - Complete record of all shifts with detailed timing
+- **Break Tracking** - Precise tracking of break start and end times
+- **Data Persistence** - Reliable PostgreSQL database with Prisma ORM
+
+## 🛠️ Tech Stack
 
 ### Core Framework
 - **[Next.js 15](https://nextjs.org/)** - React framework with App Router
@@ -12,11 +30,13 @@ A comprehensive, production-ready Next.js template with modern tooling and best 
 ### UI & Styling
 - **[Mantine UI](https://mantine.dev/)** - Modern React components library
 - **[Tailwind CSS 4](https://tailwindcss.com/)** - Utility-first CSS framework
+- **[React Icons](https://react-icons.github.io/react-icons/)** - Icon library
 - **[clsx + tailwind-merge](https://github.com/lukeed/clsx)** - Conditional classes utility
 
 ### Database & Backend
-- **[Mongoose](https://mongoosejs.com/)** - MongoDB object modeling
-- **[MongoDB](https://www.mongodb.com/)** - NoSQL database (ready to connect)
+- **[PostgreSQL](https://www.postgresql.org/)** - Reliable relational database
+- **[Prisma ORM](https://www.prisma.io/)** - Type-safe database client and migrations
+- **[Axios](https://axios-http.com/)** - HTTP client for API requests
 
 ### State Management & Forms
 - **[Zustand](https://zustand-demo.pmnd.rs/)** - Lightweight state management
@@ -37,14 +57,15 @@ A comprehensive, production-ready Next.js template with modern tooling and best 
 
 ### Prerequisites
 - Node.js 18+ 
+- PostgreSQL database
 - npm, yarn, pnpm, or bun
 
 ### Installation
 
-1. **Clone the template:**
+1. **Clone the repository:**
    ```bash
    git clone <your-repo-url>
-   cd next-bootstrap
+   cd timeclock
    ```
 
 2. **Install dependencies:**
@@ -62,9 +83,18 @@ A comprehensive, production-ready Next.js template with modern tooling and best 
    ```bash
    cp .env.example .env.local
    ```
-   Configure your MongoDB connection string and other environment variables.
+   Configure your PostgreSQL connection string:
+   ```
+   DATABASE_URL="postgresql://username:password@localhost:5432/timeclock"
+   ```
 
-4. **Run the development server:**
+4. **Set up the database:**
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
+
+5. **Run the development server:**
    ```bash
    npm run dev
    # or
@@ -75,21 +105,49 @@ A comprehensive, production-ready Next.js template with modern tooling and best 
    bun dev
    ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the time tracker.
 
 ## 📁 Project Structure
 
 ```
 src/
 ├── app/                    # Next.js App Router pages
+│   ├── api/               # API routes for employees and shifts
+│   └── settings/          # Employee management settings
+├── components/            # Reusable React components
+│   ├── Clock.tsx         # Main clock in/out component
+│   ├── EmployeeSelect.tsx # Employee selection dropdown
+│   └── Settings/         # Employee management components
 ├── lib/
-│   ├── jest/              # Testing utilities
-│   ├── mongoDB/           # Database connection & models
-│   ├── utils/             # Utility functions (cn, etc.)
-│   ├── zod/               # Zod schemas
-│   └── zustand/           # State management stores
-└── components/            # Reusable React components
+│   ├── utils/            # Utility functions and API clients
+│   ├── validators/       # Zod validation schemas
+│   └── zustand/          # State management stores
+prisma/
+└── schema/               # Database schema files
 ```
+
+## 🗄️ Database Schema
+
+### Employee Model
+- `id` - Unique identifier
+- `name` - Employee name
+- `isClockedIn` - Current clock status
+- `isOnFirstBreak` - First break status
+- `isOnLunchBreak` - Lunch break status
+- `isOnSecondBreak` - Second break status
+
+### Shift Model
+- `id` - Unique identifier
+- `employeeId` - Reference to employee
+- `date` - Shift date
+- `clockInTime` - Clock in timestamp
+- `firstBreakStartTime` - First break start
+- `firstBreakEndTime` - First break end
+- `lunchStartTime` - Lunch start
+- `lunchEndTime` - Lunch end
+- `secondBreakStartTime` - Second break start
+- `secondBreakEndTime` - Second break end
+- `clockOutTime` - Clock out timestamp
 
 ## 🧪 Testing
 
@@ -100,7 +158,7 @@ npm test
 npm run test:watch
 ```
 
-The template includes:
+The application includes:
 - Jest configuration with Next.js integration
 - React Testing Library setup
 - Test utilities in `src/lib/jest/`
@@ -108,7 +166,7 @@ The template includes:
 
 ## 🎨 Styling
 
-This template uses a hybrid approach:
+This application uses a hybrid approach:
 - **Mantine UI** for complex components and theming
 - **Tailwind CSS** for utility classes and custom styling
 - **PostCSS** with Mantine preset for optimal CSS processing
@@ -119,10 +177,6 @@ import { cn } from "@/lib/utils/cn";
 
 <div className={cn("base-classes", conditional && "conditional-classes")}>
 ```
-
-## 🗄️ Database
-
-MongoDB connection is configured in `src/lib/mongoDB/dbConnect.ts`. Create your models in the `mongoDB` directory.
 
 ## 📦 Available Scripts
 
@@ -137,6 +191,8 @@ MongoDB connection is configured in `src/lib/mongoDB/dbConnect.ts`. Create your 
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
+For production deployment, ensure your PostgreSQL database is properly configured and the `DATABASE_URL` environment variable is set.
+
 Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 ## 📚 Learn More
@@ -144,11 +200,11 @@ Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Mantine Documentation](https://mantine.dev/getting-started/)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [Mongoose Documentation](https://mongoosejs.com/docs/)
+- [Prisma Documentation](https://www.prisma.io/docs/)
 - [Zustand Documentation](https://github.com/pmndrs/zustand)
 - [React Hook Form Documentation](https://react-hook-form.com/docs)
 - [Zod Documentation](https://zod.dev/)
 
 ## 🤝 Contributing
 
-This template is designed to be a starting point for your projects. Feel free to customize it according to your needs!
+This time tracker is designed for simple and efficient employee time management. Feel free to contribute improvements or report issues!

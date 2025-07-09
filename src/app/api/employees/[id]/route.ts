@@ -68,3 +68,41 @@ export const PATCH = async (
     await prisma.$disconnect();
   }
 };
+
+export const DELETE = async (
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse<void | { message: string }>> => {
+  const prisma = new PrismaClient();
+
+  try {
+    const { id } = await params;
+
+    const employee = await prisma.employee.findUnique({
+      where: { id },
+    });
+
+    if (!employee) {
+      return NextResponse.json(
+        { message: "Employee not found" },
+        { status: 404 }
+      );
+    }
+
+    await prisma.employee.delete({
+      where: { id },
+    });
+
+    return NextResponse.json(undefined);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        message:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
+  }
+};

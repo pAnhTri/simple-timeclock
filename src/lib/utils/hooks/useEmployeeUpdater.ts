@@ -32,3 +32,30 @@ export const useEmployeeUpdater = () => {
 
   return { error, updateEmployee };
 };
+
+export const useEmployeeNameUpdater = () => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const updateEmployeeName = useCallback(
+    async (employee: Employee, name: string) => {
+      setError(null);
+      setIsLoading(true);
+
+      try {
+        const payload: Partial<Employee> = { name };
+        await updateEmployeeApi(employee, payload);
+      } catch (error) {
+        setError(
+          error instanceof Error ? error.message : "An unknown error occurred"
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    },
+
+    []
+  );
+
+  return { isLoading, error, updateEmployeeName };
+};

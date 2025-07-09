@@ -1,6 +1,5 @@
 import { useCallback, useState } from "react";
 import { createEmployee as createEmployeeApi } from "../api";
-import { revalidate } from "../actions";
 
 export const useEmployeeCreater = () => {
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +19,6 @@ export const useEmployeeCreater = () => {
       );
     } finally {
       setIsLoading(false);
-      revalidate("/");
     }
   }, []);
 
