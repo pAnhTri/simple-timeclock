@@ -1,40 +1,62 @@
-<<<<<<< HEAD
-import ClockMain from "@/components/Clock-Main";
-import { getEmployees, getTimeLogs } from "@/lib/util/server";
+import { getEmployees } from "@/lib/utils/actions";
+import Alert from "@/components/Alert";
+import { Stack, Text } from "@mantine/core";
+import Clock from "@/components/Clock";
+import EmployeeSelect from "@/components/EmployeeSelect";
+import { format, startOfToday } from "date-fns";
+import EmployeeShiftTable from "@/components/EmployeeShiftTable";
+import ClockActionButtons from "@/components/ClockActionButtons";
 
-const Home = async () => {
-  const employees = await getEmployees();
-  const timeLogs = await getTimeLogs();
+export default async function Page() {
+  // Fetch employee on page load
+  const { employees, error } = await getEmployees();
 
-  if (!employees || employees.length === 0) {
-    return <div>No employees found</div>;
+  if (error) {
+    return (
+      <Alert
+        title="Error: Fetching Employees"
+        variant="full-screen"
+        iconSize={100}
+      >
+        {error}
+      </Alert>
+    );
   }
 
-  if (!timeLogs || timeLogs.length === 0) {
-    return <div>No time logs found</div>;
+  if (employees.length === 0) {
+    return (
+      <Alert title="No employees found" variant="full-screen" iconSize={100}>
+        Add an employee to get started
+      </Alert>
+    );
   }
 
-  console.log(employees);
-  console.log(timeLogs);
-
   return (
-    <div className="flex min-h-screen">
-      <ClockMain employees={employees} timeLogs={timeLogs} />
-    </div>
-  );
-};
-
-export default Home;
-=======
-import { Button } from "@mantine/core";
-import { cn } from "@/lib/utils/cn";
-
-export default function Page() {
-  return (
-    <div className={cn("flex flex-col justify-center items-center h-screen")}>
-      <span>This is an example button:</span>
-      <Button className={cn("bg-red-500")}>Click me</Button>
+    <div className="full-screen-container justify-center items-center">
+      <Stack
+        align="center"
+        gap="md"
+        justify="center"
+        className="p-4 border-2 border-gray-200 rounded-md"
+      >
+        {/* Title */}
+        <Text component="h1" className="text-2xl font-bold">
+          Time Tracker
+        </Text>
+        {/* Clock */}
+        <Clock />
+        {/* Employee Select */}
+        <EmployeeSelect employees={employees} />
+        {/* Current Date Label */}
+        <Text size="xl">
+          Showing Timesheet for:{" "}
+          <span className="text-2xl">{format(startOfToday(), "PPP")}</span>
+        </Text>
+        {/* Employee Shift Table */}
+        <EmployeeShiftTable />
+        {/* Clock Action Buttons */}
+        <ClockActionButtons />
+      </Stack>
     </div>
   );
 }
->>>>>>> origin/postgres-refactor

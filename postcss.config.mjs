@@ -1,7 +1,4 @@
 const config = {
-<<<<<<< HEAD
-  plugins: ["@tailwindcss/postcss"],
-=======
   plugins: {
     "@tailwindcss/postcss": {},
     "postcss-preset-mantine": {},
@@ -15,7 +12,6 @@ const config = {
       },
     },
   },
->>>>>>> origin/postgres-refactor
 };
 
 export default config;
