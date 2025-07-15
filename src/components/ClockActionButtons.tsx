@@ -28,6 +28,39 @@ const ClockActionButtons = () => {
 
   const { error, updateEmployeeShift } = useEmployeeShiftUpdater();
 
+  const copyToClipboard = async (text: string) => {
+    // Use clipboard API if available AND we're in a secure context
+    if (navigator.clipboard && window.isSecureContext) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (e) {
+        console.error("navigator.clipboard failed:", e);
+      }
+    }
+
+    // Fallback method for HTTP or unsupported browsers
+    try {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      textarea.setAttribute("readonly", "");
+
+      document.body.appendChild(textarea);
+      textarea.select();
+
+      const success = document.execCommand("copy");
+      document.body.removeChild(textarea);
+
+      return success;
+    } catch (e) {
+      console.error("Fallback clipboard copy failed:", e);
+      return false;
+    }
+  };
+
   const formatTimeForCopy = (date: Date | null | undefined): string => {
     if (!date) return "";
     return format(date, "hh:mm:ss a");
@@ -44,7 +77,7 @@ const ClockActionButtons = () => {
     ].join("\t");
 
     try {
-      await navigator.clipboard.writeText(preLunchData);
+      await copyToClipboard(preLunchData);
     } catch (error) {
       console.error("Failed to copy to clipboard:", error);
     }
@@ -61,7 +94,7 @@ const ClockActionButtons = () => {
     ].join("\t");
 
     try {
-      await navigator.clipboard.writeText(postLunchData);
+      await copyToClipboard(postLunchData);
     } catch (error) {
       console.error("Failed to copy to clipboard:", error);
     }

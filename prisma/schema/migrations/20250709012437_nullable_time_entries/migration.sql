@@ -1,9 +1,0 @@
--- AlterTable
-ALTER TABLE "Shift" ALTER COLUMN "clockInTime" DROP NOT NULL,
-ALTER COLUMN "firstBreakStartTime" DROP NOT NULL,
-ALTER COLUMN "firstBreakEndTime" DROP NOT NULL,
-ALTER COLUMN "lunchStartTime" DROP NOT NULL,
-ALTER COLUMN "lunchEndTime" DROP NOT NULL,
-ALTER COLUMN "secondBreakStartTime" DROP NOT NULL,
-ALTER COLUMN "secondBreakEndTime" DROP NOT NULL,
-ALTER COLUMN "clockOutTime" DROP NOT NULL;

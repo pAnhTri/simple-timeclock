@@ -1,0 +1,7 @@
+model Token {
+    id  String @id @default(uuid())
+    jti String
+
+    @@unique([jti])
+    @@index([jti])
+}

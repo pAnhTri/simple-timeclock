@@ -1,8 +1,6 @@
 model Shift {
-  id         String   @id @default(uuid())
-  employeeId String
-  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-
+  id                   String    @id @default(uuid())
+  employeeId           String
   date                 DateTime
   clockInTime          DateTime?
   firstBreakStartTime  DateTime?
@@ -12,6 +10,7 @@ model Shift {
   secondBreakStartTime DateTime?
   secondBreakEndTime   DateTime?
   clockOutTime         DateTime?
+  employee             Employee  @relation(fields: [employeeId], references: [id], onDelete: Cascade)
 
   @@unique([employeeId, date])
   @@index([employeeId, date])

@@ -1,6 +1,40 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Employee, PrismaClient } from "prisma/generated/prisma";
 
+export const GET = async (
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+): Promise<NextResponse<Employee | { message: string }>> => {
+  const prisma = new PrismaClient();
+
+  try {
+    const { id } = await params;
+
+    const employee = await prisma.employee.findUnique({
+      where: { id },
+    });
+
+    if (!employee) {
+      return NextResponse.json(
+        { message: "Employee not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(employee);
+  } catch (error) {
+    return NextResponse.json(
+      {
+        message:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
+  }
+};
+
 export const PATCH = async (
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -17,6 +51,7 @@ export const PATCH = async (
       isOnFirstBreak,
       isOnLunchBreak,
       isOnSecondBreak,
+      email,
     } = body;
 
     // Check if any field is actually provided in the request
@@ -52,6 +87,7 @@ export const PATCH = async (
         isOnFirstBreak: isOnFirstBreak ?? undefined,
         isOnLunchBreak: isOnLunchBreak ?? undefined,
         isOnSecondBreak: isOnSecondBreak ?? undefined,
+        email: email ?? undefined,
       },
     });
 

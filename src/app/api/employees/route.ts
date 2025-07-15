@@ -1,5 +1,7 @@
+import { employeeCreationValidator } from "@/lib/validators/employees";
 import { NextResponse, NextRequest } from "next/server";
 import { Employee, PrismaClient } from "prisma/generated/prisma";
+import { genSaltSync, hashSync } from "bcrypt-ts";
 
 export const GET = async (): Promise<
   NextResponse<Employee[] | { message: string }>
@@ -28,20 +30,24 @@ export const POST = async (
   const prisma = new PrismaClient();
 
   try {
-    const { name } = await req.json();
+    const payload = await req.json();
 
-    if (!name) {
-      return NextResponse.json(
-        { message: "Name is required" },
-        { status: 400 }
-      );
+    const validated = employeeCreationValidator.safeParse(payload);
+    if (!validated.success) {
+      return NextResponse.json({ message: "Invalid payload" }, { status: 400 });
     }
+
+    const salt = genSaltSync(10);
+    const hashedPassword = hashSync(validated.data.password, salt);
 
     const newEmployee = await prisma.employee.create({
       data: {
-        name,
+        name: validated.data.name,
+        email: validated.data.email,
+        password: hashedPassword,
       },
     });
+
     return NextResponse.json(newEmployee);
   } catch (error) {
     return NextResponse.json(

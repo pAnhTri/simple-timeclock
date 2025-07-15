@@ -1,51 +1,19 @@
-import { getEmployees } from "@/lib/utils/actions";
-import Alert from "@/components/Alert";
-import { Affix, Button, Stack, Text } from "@mantine/core";
+import { Stack, Text } from "@mantine/core";
 import Clock from "@/components/Clock";
 import EmployeeSelect from "@/components/EmployeeSelect";
 import { format, startOfToday } from "date-fns";
 import EmployeeShiftTable from "@/components/EmployeeShiftTable";
 import ClockActionButtons from "@/components/ClockActionButtons";
-import { FaGear } from "react-icons/fa6";
-import Link from "next/link";
+import { isFlaskConnected } from "@/lib/utils/actions/flask";
+import AuthHydrater from "@/components/AuthHydrater";
+import HomeActionButtons from "@/components/HomeActionButtons";
 
 export default async function Page() {
-  // Fetch employee on page load
-  const { employees, error } = await getEmployees();
-
-  if (error) {
-    return (
-      <Alert
-        title="Error: Fetching Employees"
-        variant="full-screen"
-        iconSize={100}
-      >
-        {error}
-      </Alert>
-    );
-  }
-
-  if (employees.length === 0) {
-    return (
-      <Alert title="No employees found" variant="full-screen" iconSize={100}>
-        Add an employee to get started
-      </Alert>
-    );
-  }
+  const { isConnected } = await isFlaskConnected();
 
   return (
-    <>
-      <Affix position={{ top: 20, right: 20 }}>
-        <Button
-          component={Link}
-          href="/settings"
-          color="gray"
-          size="lg"
-          variant="subtle"
-        >
-          <FaGear />
-        </Button>
-      </Affix>
+    <AuthHydrater>
+      <HomeActionButtons isConnected={isConnected} />
       <div className="full-screen-container justify-center items-center">
         <Stack
           align="center"
@@ -60,7 +28,7 @@ export default async function Page() {
           {/* Clock */}
           <Clock />
           {/* Employee Select */}
-          <EmployeeSelect employees={employees} />
+          <EmployeeSelect />
           {/* Current Date Label */}
           <Text size="xl">
             Showing Timesheet for:{" "}
@@ -72,6 +40,6 @@ export default async function Page() {
           <ClockActionButtons />
         </Stack>
       </div>
-    </>
+    </AuthHydrater>
   );
 }

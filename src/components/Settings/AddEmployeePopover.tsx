@@ -3,8 +3,8 @@
 import { revalidate } from "@/lib/utils/actions";
 import { useEmployeeCreater } from "@/lib/utils/hooks";
 import {
-  EmployeeNameEditInput,
-  employeeNameEditValidator,
+  EmployeeCreationInput,
+  employeeCreationValidator,
 } from "@/lib/validators/employees";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, LoadingOverlay, Popover, TextInput } from "@mantine/core";
@@ -12,6 +12,7 @@ import { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Alert from "../Alert";
 import { FiPlus } from "react-icons/fi";
+import { Employee } from "prisma/generated/prisma";
 
 const AddEmployeePopover = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -22,16 +23,25 @@ const AddEmployeePopover = () => {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<EmployeeNameEditInput>({
-    resolver: zodResolver(employeeNameEditValidator),
+  } = useForm<EmployeeCreationInput>({
+    resolver: zodResolver(employeeCreationValidator),
     defaultValues: {
       name: "",
+      email: "",
+      password: "",
     },
   });
 
-  const onSubmit: SubmitHandler<EmployeeNameEditInput> = async (data) => {
+  const onSubmit: SubmitHandler<EmployeeCreationInput> = async (data) => {
     const sanitizedName = data.name.trim();
-    await createEmployee(sanitizedName);
+
+    const payload: Partial<Employee> = {
+      name: sanitizedName,
+      email: data.email,
+      password: data.password,
+    };
+
+    await createEmployee(payload);
     handleClose();
     revalidate("/settings");
   };
@@ -86,6 +96,34 @@ const AddEmployeePopover = () => {
               />
             )}
           />
+
+          <Controller
+            control={control}
+            name="email"
+            render={({ field }) => (
+              <TextInput
+                label="Employee Email"
+                placeholder="Enter employee email"
+                {...field}
+                error={errors.email?.message}
+              />
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="password"
+            render={({ field }) => (
+              <TextInput
+                label="Employee Password"
+                placeholder="Enter employee password"
+                {...field}
+                error={errors.password?.message}
+                type="password"
+              />
+            )}
+          />
+
           <Button color="green" type="submit" loading={isLoading}>
             Add Employee
           </Button>

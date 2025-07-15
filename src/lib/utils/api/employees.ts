@@ -11,11 +11,26 @@ export const getEmployees = async (): Promise<Employee[]> => {
   }
 };
 
-export const createEmployee = async (employee: string): Promise<Employee> => {
+export const getEmployeeById = async (id: string): Promise<Employee> => {
   try {
-    const { data: newEmployee } = await axios.post<Employee>("/api/employees", {
-      name: employee,
-    });
+    const { data: employee } = await axios.get<Employee>(
+      `/api/employees/${encodeURIComponent(id)}`
+    );
+
+    return employee;
+  } catch (error) {
+    throw new Error(getAxiosError(error));
+  }
+};
+
+export const createEmployee = async (
+  payload: Partial<Employee>
+): Promise<Employee> => {
+  try {
+    const { data: newEmployee } = await axios.post<Employee>(
+      "/api/employees",
+      payload
+    );
     return newEmployee;
   } catch (error) {
     throw new Error(getAxiosError(error));

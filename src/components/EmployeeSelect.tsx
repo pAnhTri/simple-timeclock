@@ -1,59 +1,46 @@
 "use client";
 
-import { useShiftGetter } from "@/lib/utils/hooks";
-import { useEmployeeStore, useShiftStore } from "@/lib/zustand";
-import { Select, Text } from "@mantine/core";
+import { useGetter, useShiftGetter } from "@/lib/utils/hooks";
+import { useAuthStore, useEmployeeStore } from "@/lib/zustand";
+import { Loader, Text, Title } from "@mantine/core";
 import { startOfToday } from "date-fns";
-import { Employee } from "prisma/generated/prisma";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Alert from "./Alert";
+import { Employee } from "prisma/generated/prisma";
+import { getEmployeeById } from "@/lib/utils/api";
 
-interface EmployeeSelectProps {
-  employees: Employee[];
-}
-
-const EmployeeSelect = ({ employees }: EmployeeSelectProps) => {
+const EmployeeSelect = () => {
   const [isInitialized, setIsInitialized] = useState(false);
+  const {
+    data: employee,
+    isLoading: isEmployeeLoading,
+    getterFunction: getEmployee,
+  } = useGetter<Employee, [string]>(getEmployeeById);
+
+  const payload = useAuthStore((state) => state.payload);
 
   const { error, getShift } = useShiftGetter();
 
-  const currentEmployee = useEmployeeStore((state) => state.currentEmployee);
   const setCurrentEmployee = useEmployeeStore(
     (state) => state.setCurrentEmployee
   );
 
-  const isShiftLoading = useShiftStore((state) => state.isLoading);
-  const isEmployeeLoading = useEmployeeStore((state) => state.isLoading);
-
   // Default to first employee on mount
   useEffect(() => {
     const initializeShift = async () => {
-      if (!isInitialized && employees.length > 0) {
-        const employee = employees[0];
-        setCurrentEmployee(employee);
-        await getShift(employee.id, startOfToday());
-        setIsInitialized(true);
+      if (!isInitialized && payload) {
+        await getEmployee(payload.id as string);
+        if (employee) {
+          setCurrentEmployee(employee);
+          await getShift(employee.id, startOfToday());
+          setIsInitialized(true);
+        }
       }
     };
 
     initializeShift();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const employeeData = useMemo(() => {
-    return employees.map((employee) => ({
-      value: employee.id,
-      label: employee.name,
-    }));
-  }, [employees]);
-
-  const handleChange = async (value: string | null) => {
-    const employee = employees.find((employee) => employee.id === value);
-    if (employee) {
-      setCurrentEmployee(employee);
-      await getShift(employee.id, startOfToday());
-    }
-  };
+  }, [payload]);
 
   return (
     <>
@@ -62,21 +49,11 @@ const EmployeeSelect = ({ employees }: EmployeeSelectProps) => {
           <Text>{error}</Text>
         </Alert>
       )}
-      <Select
-        data={employeeData}
-        value={currentEmployee?.id || null}
-        onChange={handleChange}
-        disabled={!isInitialized || isShiftLoading || isEmployeeLoading}
-        nothingFoundMessage="No employees found"
-        placeholder="Select an employee"
-        label="Employee"
-        searchable
-        withCheckIcon={false}
-        size="xl"
-        classNames={{
-          label: "mb-2 text-sm",
-        }}
-      />
+      {!isEmployeeLoading ? (
+        <Title order={2}>{employee?.name}</Title>
+      ) : (
+        <Loader size="xl" />
+      )}
     </>
   );
 };

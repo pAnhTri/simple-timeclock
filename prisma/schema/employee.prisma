@@ -1,10 +1,19 @@
-model Employee {
-  id        String   @id @default(uuid())
-  name      String
-  isClockedIn Boolean @default(false)
-  isOnFirstBreak Boolean @default(false)
-  isOnLunchBreak Boolean @default(false)
-  isOnSecondBreak Boolean @default(false)
+enum Role {
+  USER
+  ADMIN
+}
 
-  shifts Shift[]
+model Employee {
+  id              String  @id @default(uuid())
+  name            String
+  isClockedIn     Boolean @default(false)
+  isOnFirstBreak  Boolean @default(false)
+  isOnLunchBreak  Boolean @default(false)
+  isOnSecondBreak Boolean @default(false)
+  email           String  @unique
+  password        String
+  role            Role    @default(USER)
+  shifts          Shift[]
+
+  @@index([email])
 }

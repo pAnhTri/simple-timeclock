@@ -4,6 +4,12 @@ A simple and efficient time tracking application for managing employee clock in/
 
 ## 🚀 Features
 
+### Authentication & Security
+- **Secure Login System** - Email and password-based authentication with JWT tokens
+- **Role-Based Access** - Support for USER and ADMIN roles with different permissions
+- **Session Management** - Automatic token refresh and secure session handling
+- **Password Security** - Bcrypt hashing with strong password requirements
+
 ### Time Tracking
 - **Manual Clock In/Out** - Simple button-based clock in and out functionality
 - **Break Management** - Track two paid breaks per shift with manual start/stop
@@ -12,8 +18,8 @@ A simple and efficient time tracking application for managing employee clock in/
 
 ### Employee Management
 - **Employee CRUD** - Create, read, update, and delete employee records
-- **Employee Selection** - Easy employee switching for time tracking
-- **Employee Settings** - Manage employee names and information
+- **Employee Settings** - Manage employee names, emails, and role assignments
+- **Admin Controls** - Administrative interface for managing all employees
 
 ### Data & Analytics
 - **Shift History** - Complete record of all shifts with detailed timing
@@ -37,6 +43,8 @@ A simple and efficient time tracking application for managing employee clock in/
 - **[PostgreSQL](https://www.postgresql.org/)** - Reliable relational database
 - **[Prisma ORM](https://www.prisma.io/)** - Type-safe database client and migrations
 - **[Axios](https://axios-http.com/)** - HTTP client for API requests
+- **[bcrypt-ts](https://github.com/bleu48/bcrypt-ts)** - Password hashing and verification
+- **[jose](https://github.com/panva/jose)** - JWT token generation and verification
 
 ### State Management & Forms
 - **[Zustand](https://zustand-demo.pmnd.rs/)** - Lightweight state management
@@ -59,6 +67,16 @@ A simple and efficient time tracking application for managing employee clock in/
 - Node.js 18+ 
 - PostgreSQL database
 - npm, yarn, pnpm, or bun
+
+### Authentication Requirements
+- Employee accounts must be created with valid email addresses
+- Passwords must meet security requirements:
+  - Minimum 8 characters
+  - Maximum 30 characters
+  - At least one uppercase letter
+  - At least one lowercase letter
+  - At least one number
+  - At least one special character (@$!%*?&#)
 
 ### Installation
 
@@ -83,9 +101,10 @@ A simple and efficient time tracking application for managing employee clock in/
    ```bash
    cp .env.example .env.local
    ```
-   Configure your PostgreSQL connection string:
+   Configure your PostgreSQL connection string and JWT secret:
    ```
    DATABASE_URL="postgresql://username:password@localhost:5432/timeclock"
+   JWT_SECRET="your-super-secret-jwt-key-here"
    ```
 
 4. **Set up the database:**
@@ -105,18 +124,19 @@ A simple and efficient time tracking application for managing employee clock in/
    bun dev
    ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the time tracker.
+Open [http://localhost:3000](http://localhost:3000) with your browser. You'll be redirected to the login page where you can authenticate with your employee credentials.
 
 ## 📁 Project Structure
 
 ```
 src/
 ├── app/                    # Next.js App Router pages
-│   ├── api/               # API routes for employees and shifts
+│   ├── api/               # API routes for authentication, employees and shifts
+│   ├── login/             # Authentication login page
 │   └── settings/          # Employee management settings
 ├── components/            # Reusable React components
 │   ├── Clock.tsx         # Main clock in/out component
-│   ├── EmployeeSelect.tsx # Employee selection dropdown
+│   ├── AuthHydrater.tsx  # Authentication state hydration
 │   └── Settings/         # Employee management components
 ├── lib/
 │   ├── utils/            # Utility functions and API clients
@@ -131,10 +151,17 @@ prisma/
 ### Employee Model
 - `id` - Unique identifier
 - `name` - Employee name
+- `email` - Unique email address for authentication
+- `password` - Bcrypt-hashed password
+- `role` - User role (USER or ADMIN)
 - `isClockedIn` - Current clock status
 - `isOnFirstBreak` - First break status
 - `isOnLunchBreak` - Lunch break status
 - `isOnSecondBreak` - Second break status
+
+### Token Model
+- `id` - Unique identifier
+- `jti` - JWT ID for refresh token management
 
 ### Shift Model
 - `id` - Unique identifier

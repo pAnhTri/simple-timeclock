@@ -33,17 +33,16 @@ export const useEmployeeUpdater = () => {
   return { error, updateEmployee };
 };
 
-export const useEmployeeNameUpdater = () => {
+export const useEmployeeNameEmailUpdater = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const updateEmployeeName = useCallback(
-    async (employee: Employee, name: string) => {
+  const updateEmployeeNameEmail = useCallback(
+    async (employee: Employee, payload: Partial<Employee>) => {
       setError(null);
       setIsLoading(true);
 
       try {
-        const payload: Partial<Employee> = { name };
         await updateEmployeeApi(employee, payload);
       } catch (error) {
         setError(
@@ -57,5 +56,5 @@ export const useEmployeeNameUpdater = () => {
     []
   );
 
-  return { isLoading, error, updateEmployeeName };
+  return { isLoading, error, updateEmployeeNameEmail };
 };

@@ -9,7 +9,7 @@ import { Employee } from "prisma/generated/prisma";
 import { useEffect, useState } from "react";
 import { useForm, SubmitHandler, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEmployeeNameUpdater } from "@/lib/utils/hooks/useEmployeeUpdater";
+import { useEmployeeNameEmailUpdater } from "@/lib/utils/hooks/useEmployeeUpdater";
 import Alert from "../Alert";
 import { revalidate } from "@/lib/utils/actions";
 import { FiEdit } from "react-icons/fi";
@@ -20,7 +20,8 @@ interface NameEditModalProps {
 
 const NameEditModal = ({ employee }: NameEditModalProps) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { updateEmployeeName, isLoading, error } = useEmployeeNameUpdater();
+  const { updateEmployeeNameEmail, isLoading, error } =
+    useEmployeeNameEmailUpdater();
 
   const {
     control,
@@ -43,7 +44,11 @@ const NameEditModal = ({ employee }: NameEditModalProps) => {
   const onSubmit: SubmitHandler<EmployeeNameEditInput> = async (data) => {
     const sanitizedName = data.name.trim();
 
-    await updateEmployeeName(employee, sanitizedName);
+    const payload: Partial<Employee> = {
+      name: sanitizedName,
+    };
+
+    await updateEmployeeNameEmail(employee, payload);
 
     // Everything succeeds, close the modal
     handleClose();
@@ -85,6 +90,7 @@ const NameEditModal = ({ employee }: NameEditModalProps) => {
               />
             )}
           />
+
           <Group justify="flex-end" gap="xs">
             <Button type="submit" loading={isLoading}>
               Save
