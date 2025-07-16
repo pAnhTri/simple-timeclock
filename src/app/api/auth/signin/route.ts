@@ -9,6 +9,9 @@ export const POST = async (
   req: NextRequest
 ): Promise<NextResponse<{ accessToken: string } | { message: string }>> => {
   const prisma = new PrismaClient();
+  const headers = req.headers;
+  const protocol = headers.get("x-forwarded-proto") || "http";
+  const isSecure = protocol === "https";
 
   try {
     const { email, password } = await req.json();
@@ -70,7 +73,7 @@ export const POST = async (
 
     cookieStore.set("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isSecure,
       maxAge: 60 * 60 * 24 * 7, // 7 days
     });
 

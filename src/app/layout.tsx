@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@mantine/core/styles.css";
+import "@mantine/dates/styles.css";
 import "./globals.css";
 
 import {
@@ -9,8 +10,8 @@ import {
 } from "@mantine/core";
 
 export const metadata: Metadata = {
-  title: "My Mantine app",
-  description: "I have followed setup instructions carefully",
+  title: "RLG Time Tracker",
+  description: "RLG Time Tracker",
 };
 
 export default function RootLayout({

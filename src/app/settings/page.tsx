@@ -41,7 +41,17 @@ const SettingPage = async () => {
           </Text>
           <Group justify="space-between">
             <Text>Employees</Text>
-            <AddEmployeePopover />
+            <Group gap="xs">
+              <Button
+                component={Link}
+                href="/admin/time-entries"
+                color="blue"
+                size="sm"
+              >
+                View Time Entries
+              </Button>
+              <AddEmployeePopover />
+            </Group>
           </Group>
           <Table
             striped

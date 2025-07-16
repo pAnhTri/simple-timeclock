@@ -25,3 +25,18 @@ export const signOut = async (): Promise<void> => {
     throw new Error(getAxiosError(error));
   }
 };
+
+export const validateToken = async (
+  rootUrl: string = "http://localhost:3000",
+  jti: string
+): Promise<{ isInvalid: boolean }> => {
+  try {
+    const { data } = await axios.post<{ isInvalid: boolean }>(
+      `${rootUrl}/api/auth/validate`,
+      { jti }
+    );
+    return data;
+  } catch (error) {
+    throw new Error(getAxiosError(error));
+  }
+};

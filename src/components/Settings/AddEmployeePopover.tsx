@@ -7,7 +7,13 @@ import {
   employeeCreationValidator,
 } from "@/lib/validators/employees";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button, LoadingOverlay, Popover, TextInput } from "@mantine/core";
+import {
+  Button,
+  LoadingOverlay,
+  PasswordInput,
+  Popover,
+  TextInput,
+} from "@mantine/core";
 import { useState } from "react";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Alert from "../Alert";
@@ -114,12 +120,11 @@ const AddEmployeePopover = () => {
             control={control}
             name="password"
             render={({ field }) => (
-              <TextInput
+              <PasswordInput
                 label="Employee Password"
                 placeholder="Enter employee password"
                 {...field}
                 error={errors.password?.message}
-                type="password"
               />
             )}
           />

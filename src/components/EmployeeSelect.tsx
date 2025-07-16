@@ -40,7 +40,7 @@ const EmployeeSelect = () => {
 
     initializeShift();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [payload]);
+  }, [payload, employee]);
 
   return (
     <>
