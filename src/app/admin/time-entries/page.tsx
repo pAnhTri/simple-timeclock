@@ -42,7 +42,9 @@ const AdminTimeEntriesPage = () => {
           setEmployees(employees);
         }
       } catch (err) {
-        setError("Failed to load employees");
+        setError(
+          err instanceof Error ? err.message : "Failed to load employees"
+        );
       }
     };
 
@@ -73,7 +75,9 @@ const AdminTimeEntriesPage = () => {
           setShifts(shifts);
         }
       } catch (err) {
-        setError("Failed to load time entries");
+        setError(
+          err instanceof Error ? err.message : "Failed to load time entries"
+        );
       } finally {
         setIsLoading(false);
       }

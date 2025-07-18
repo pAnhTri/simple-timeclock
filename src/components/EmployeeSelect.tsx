@@ -11,28 +11,27 @@ import { getEmployeeById } from "@/lib/utils/api";
 
 const EmployeeSelect = () => {
   const [isInitialized, setIsInitialized] = useState(false);
-  const {
-    data: employee,
-    isLoading: isEmployeeLoading,
-    getterFunction: getEmployee,
-  } = useGetter<Employee, [string]>(getEmployeeById);
+
+  const currentEmployee = useEmployeeStore((state) => state.currentEmployee);
+  const setCurrentEmployee = useEmployeeStore(
+    (state) => state.setCurrentEmployee
+  );
+
+  const { isLoading: isEmployeeLoading, getterFunction: getEmployee } =
+    useGetter<Employee, [string]>(getEmployeeById, setCurrentEmployee);
 
   const payload = useAuthStore((state) => state.payload);
 
   const { error, getShift } = useShiftGetter();
-
-  const setCurrentEmployee = useEmployeeStore(
-    (state) => state.setCurrentEmployee
-  );
 
   // Default to first employee on mount
   useEffect(() => {
     const initializeShift = async () => {
       if (!isInitialized && payload) {
         await getEmployee(payload.id as string);
-        if (employee) {
-          setCurrentEmployee(employee);
-          await getShift(employee.id, startOfToday());
+        if (currentEmployee) {
+          setCurrentEmployee(currentEmployee);
+          await getShift(currentEmployee.id, startOfToday());
           setIsInitialized(true);
         }
       }
@@ -40,7 +39,7 @@ const EmployeeSelect = () => {
 
     initializeShift();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [payload, employee]);
+  }, [payload, currentEmployee]);
 
   return (
     <>
@@ -50,7 +49,7 @@ const EmployeeSelect = () => {
         </Alert>
       )}
       {!isEmployeeLoading ? (
-        <Title order={2}>{employee?.name}</Title>
+        <Title order={2}>{currentEmployee?.name}</Title>
       ) : (
         <Loader size="xl" />
       )}

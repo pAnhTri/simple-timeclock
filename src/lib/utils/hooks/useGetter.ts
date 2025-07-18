@@ -1,7 +1,8 @@
 import { useCallback, useState } from "react";
 
 export const useGetter = <T, A extends unknown[]>(
-  callback: (...args: A) => Promise<T>
+  callback: (...args: A) => Promise<T>,
+  storeSetter?: (data: T) => void
 ) => {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +17,11 @@ export const useGetter = <T, A extends unknown[]>(
       try {
         const result = await callback(...args);
 
-        setData(result);
+        if (storeSetter) {
+          storeSetter(result);
+        } else {
+          setData(result);
+        }
       } catch (error) {
         setError(
           error instanceof Error ? error.message : "An unknown error occurred"
@@ -25,7 +30,7 @@ export const useGetter = <T, A extends unknown[]>(
         setIsLoading(false);
       }
     },
-    [callback]
+    [callback, storeSetter]
   );
 
   return { data, error, isLoading, getterFunction };
