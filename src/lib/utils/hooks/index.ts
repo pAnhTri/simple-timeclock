@@ -1,4 +1,6 @@
 export * from "./auth";
+export * from "./employees";
+export * from "./shifts";
 export * from "./useEmployeeCreater";
 export * from "./useEmployeeDeleter";
 export * from "./useEmployeeShiftUpdater";

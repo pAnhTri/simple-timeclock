@@ -1,6 +1,6 @@
 "use client";
 
-import { Affix, Button, Group } from "@mantine/core";
+import { ActionIcon, Affix, Button, Group } from "@mantine/core";
 import Link from "next/link";
 import { FaGear } from "react-icons/fa6";
 import { useAuthStore } from "@/lib/zustand";
@@ -13,21 +13,21 @@ interface HomeActionButtonsProps {
 
 const HomeActionButtons = ({ isConnected }: HomeActionButtonsProps) => {
   const payload = useAuthStore((state) => state.payload);
-  const { logout, isLoading } = useLogout();
+  const { logoutAction, isLoading } = useLogout();
 
   return (
     <Affix position={{ top: 20, right: 20 }}>
       <Group p="xs">
         {/* Logout Button */}
         <Button
-          onClick={async () => await logout()}
+          onClick={async () => await logoutAction()}
           loading={isLoading}
           color="red"
         >
           Logout
         </Button>
         {payload && (payload.role as string).toLowerCase() === "admin" && (
-          <Button
+          <ActionIcon
             component={Link}
             href="/settings"
             color="gray"
@@ -35,7 +35,7 @@ const HomeActionButtons = ({ isConnected }: HomeActionButtonsProps) => {
             variant="subtle"
           >
             <FaGear />
-          </Button>
+          </ActionIcon>
         )}
         {isConnected && <OpenExcel />}
       </Group>

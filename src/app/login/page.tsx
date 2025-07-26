@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
 const LoginPage = () => {
-  const { login, isLoading, error } = useLogin();
+  const { loginAction, isLoading, error } = useLogin();
   const router = useRouter();
 
   const {
@@ -34,7 +34,7 @@ const LoginPage = () => {
   });
 
   const onSubmit: SubmitHandler<LoginInput> = async (data) => {
-    const isLoginSuccess = await login(data.email, data.password);
+    const isLoginSuccess = await loginAction(data.email, data.password);
     if (isLoginSuccess) {
       reset();
       router.push("/");

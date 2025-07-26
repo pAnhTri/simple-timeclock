@@ -1,16 +1,19 @@
 "use client";
 
-import { useShiftStore } from "@/lib/zustand";
-import { Skeleton, Table, Text } from "@mantine/core";
+import { useShiftToday } from "@/lib/utils/hooks";
+import { useAuthStore } from "@/lib/zustand";
+import { Alert, LoadingOverlay, Skeleton, Table, Text } from "@mantine/core";
 import { format } from "date-fns";
 import { useMemo } from "react";
 
 const EmployeeShiftTable = () => {
-  const currentShift = useShiftStore((state) => state.currentShift);
-  const isLoading = useShiftStore((state) => state.isLoading);
+  const payload = useAuthStore((state) => state.payload);
+  const { shift, isLoading, isValidating, error } = useShiftToday(
+    payload?.id as string
+  );
 
   const tableData = useMemo(() => {
-    if (!currentShift)
+    if (!shift)
       return {
         head: [],
         body: [],
@@ -29,49 +32,51 @@ const EmployeeShiftTable = () => {
       ],
       body: [
         [
-          currentShift.clockInTime
-            ? format(currentShift.clockInTime, "hh:mm a")
+          shift.clockInTime ? format(shift.clockInTime, "hh:mm a") : "-",
+          shift.firstBreakStartTime
+            ? format(shift.firstBreakStartTime, "hh:mm a")
             : "-",
-          currentShift.firstBreakStartTime
-            ? format(currentShift.firstBreakStartTime, "hh:mm a")
+          shift.firstBreakEndTime
+            ? format(shift.firstBreakEndTime, "hh:mm a")
             : "-",
-          currentShift.firstBreakEndTime
-            ? format(currentShift.firstBreakEndTime, "hh:mm a")
+          shift.lunchStartTime ? format(shift.lunchStartTime, "hh:mm a") : "-",
+          shift.lunchEndTime ? format(shift.lunchEndTime, "hh:mm a") : "-",
+          shift.secondBreakStartTime
+            ? format(shift.secondBreakStartTime, "hh:mm a")
             : "-",
-          currentShift.lunchStartTime
-            ? format(currentShift.lunchStartTime, "hh:mm a")
+          shift.secondBreakEndTime
+            ? format(shift.secondBreakEndTime, "hh:mm a")
             : "-",
-          currentShift.lunchEndTime
-            ? format(currentShift.lunchEndTime, "hh:mm a")
-            : "-",
-          currentShift.secondBreakStartTime
-            ? format(currentShift.secondBreakStartTime, "hh:mm a")
-            : "-",
-          currentShift.secondBreakEndTime
-            ? format(currentShift.secondBreakEndTime, "hh:mm a")
-            : "-",
-          currentShift.clockOutTime
-            ? format(currentShift.clockOutTime, "hh:mm a")
-            : "-",
+          shift.clockOutTime ? format(shift.clockOutTime, "hh:mm a") : "-",
         ],
       ],
     };
-  }, [currentShift]);
+  }, [shift]);
 
   if (isLoading) return <Skeleton height={20} width={500} />;
 
-  if (!currentShift) return <Text>No shift found! Please clock in first.</Text>;
+  if (error)
+    return (
+      <Alert color="red" title="Error">
+        <Text>{error}</Text>
+      </Alert>
+    );
+
+  if (!shift) return <Text>No shift found! Please clock in first.</Text>;
 
   return (
-    <Table
-      striped
-      highlightOnHover
-      data={tableData}
-      withTableBorder
-      classNames={{
-        td: "text-center",
-      }}
-    />
+    <div className="relative">
+      <LoadingOverlay visible={isValidating} overlayProps={{ blur: 2 }} />
+      <Table
+        striped
+        highlightOnHover
+        data={tableData}
+        withTableBorder
+        classNames={{
+          td: "text-center",
+        }}
+      />
+    </div>
   );
 };
 

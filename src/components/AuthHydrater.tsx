@@ -4,7 +4,7 @@ import { getPayload } from "@/lib/utils/actions";
 import { useAuthStore } from "@/lib/zustand";
 import { useEffect } from "react";
 
-const AuthHydrater = ({ children }: { children: React.ReactNode }) => {
+const AuthHydrater = () => {
   const setPayload = useAuthStore((state) => state.setPayload);
 
   useEffect(
@@ -34,7 +34,7 @@ const AuthHydrater = ({ children }: { children: React.ReactNode }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
-  return <>{children}</>;
+  return null;
 };
 
 export default AuthHydrater;

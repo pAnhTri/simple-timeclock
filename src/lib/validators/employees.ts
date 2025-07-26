@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { shiftValidator } from "./shift";
 
 const employeeName = z
   .string()
@@ -31,5 +32,17 @@ export const employeeCreationValidator = z.object({
   password: employeePassword,
 });
 
+export const employeeValidator = z.object({
+  name: employeeName,
+  isClockedIn: z.boolean().optional(),
+  isOnFirstBreak: z.boolean().optional(),
+  isOnLunchBreak: z.boolean().optional(),
+  isOnSecondBreak: z.boolean().optional(),
+  email: employeeEmail,
+  password: employeePassword,
+  role: z.enum(["USER", "ADMIN"]).optional(),
+});
+
 export type EmployeeNameEditInput = z.infer<typeof employeeNameEditValidator>;
 export type EmployeeCreationInput = z.infer<typeof employeeCreationValidator>;
+export type EmployeeInput = z.infer<typeof employeeValidator>;

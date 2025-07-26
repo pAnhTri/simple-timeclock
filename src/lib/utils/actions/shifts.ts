@@ -1,6 +1,8 @@
 "use server";
 
+import { shiftValidator } from "@/lib/validators/shift";
 import { PrismaClient, Shift } from "prisma/generated/prisma";
+import { prismaActionWrapper } from "./utility";
 
 const prisma = new PrismaClient();
 
@@ -45,4 +47,46 @@ export const getEmployeeShiftsByDateRange = async (
   }
 
   return returnValues;
+};
+
+export const createShiftByEmployeeId = async (
+  employeeId: string
+): Promise<Shift> => {
+  return await prismaActionWrapper<Shift>(async () => {
+    const shift = await prisma.shift.create({
+      data: {
+        employeeId,
+        date: new Date(),
+        clockInTime: new Date(),
+      },
+    });
+    return shift;
+  });
+};
+
+export const updateShiftByEmployeeId = async (
+  employeeId: string,
+  shiftId: string,
+  payload: Partial<Shift>
+): Promise<Shift> => {
+  return await prismaActionWrapper<Shift>(async () => {
+    if (Object.keys(payload).length === 0) {
+      throw new Error("No fields to update");
+    }
+
+    const sanitizedPayload = shiftValidator.partial().safeParse(payload);
+
+    if (!sanitizedPayload.success) {
+      throw new Error(sanitizedPayload.error.message);
+    }
+
+    const updatedShift = await prisma.shift.update({
+      where: {
+        id: shiftId,
+        employeeId,
+      },
+      data: sanitizedPayload.data,
+    });
+    return updatedShift;
+  });
 };

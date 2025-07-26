@@ -1,32 +1,48 @@
 "use client";
 
-import { useEmployeeStore, useShiftStore } from "@/lib/zustand";
+import { useAuthStore } from "@/lib/zustand";
 import { Button, Group, LoadingOverlay, Text } from "@mantine/core";
-import { useEmployeeShiftUpdater } from "@/lib/utils/hooks";
+import {
+  useEmployee,
+  useShiftToday,
+  useShiftTodayUpdate,
+} from "@/lib/utils/hooks";
 import Alert from "./Alert";
 import { format } from "date-fns";
 
 const ClockActionButtons = () => {
-  const currentEmployee = useEmployeeStore((state) => state.currentEmployee);
-  const currentShift = useShiftStore((state) => state.currentShift);
+  const payload = useAuthStore((state) => state.payload);
+  const {
+    shift,
+    isLoading: isShiftLoading,
+    error: shiftError,
+  } = useShiftToday(payload?.id as string, false);
+  const {
+    employee,
+    isLoading: isEmployeeLoading,
+    error: employeeError,
+  } = useEmployee(payload?.id as string, false);
 
-  const isEmployeeLoading = useEmployeeStore((state) => state.isLoading);
-  const isShiftLoading = useShiftStore((state) => state.isLoading);
+  const {
+    isLoading: isShiftUpdateLoading,
+    error: isShiftUpdateError,
+    updateShiftAction,
+  } = useShiftTodayUpdate(payload?.id as string);
 
-  const isLoading = isEmployeeLoading || isShiftLoading;
-  const isShiftCompleted =
-    !!currentShift?.clockInTime && !!currentShift?.clockOutTime;
+  console.log("shift:", shift);
+  console.log("employee:", employee);
+
+  const isLoading = isEmployeeLoading || isShiftLoading || isShiftUpdateLoading;
+  const isShiftCompleted = !!shift?.clockInTime && !!shift?.clockOutTime;
 
   const isFirstBreakCompleted =
-    !!currentShift?.firstBreakStartTime && !!currentShift?.firstBreakEndTime;
+    !!shift?.firstBreakStartTime && !!shift?.firstBreakEndTime;
 
   const isLunchBreakCompleted =
-    !!currentShift?.lunchStartTime && !!currentShift?.lunchEndTime;
+    !!shift?.lunchStartTime && !!shift?.lunchEndTime;
 
   const isSecondBreakCompleted =
-    !!currentShift?.secondBreakStartTime && !!currentShift?.secondBreakEndTime;
-
-  const { error, updateEmployeeShift } = useEmployeeShiftUpdater();
+    !!shift?.secondBreakStartTime && !!shift?.secondBreakEndTime;
 
   const copyToClipboard = async (text: string) => {
     // Use clipboard API if available AND we're in a secure context
@@ -67,13 +83,13 @@ const ClockActionButtons = () => {
   };
 
   const handleCopyPreLunch = async () => {
-    if (!currentShift) return;
+    if (!shift) return;
 
     const preLunchData = [
-      formatTimeForCopy(currentShift.clockInTime),
-      formatTimeForCopy(currentShift.firstBreakStartTime),
-      formatTimeForCopy(currentShift.firstBreakEndTime),
-      formatTimeForCopy(currentShift.lunchStartTime),
+      formatTimeForCopy(shift.clockInTime),
+      formatTimeForCopy(shift.firstBreakStartTime),
+      formatTimeForCopy(shift.firstBreakEndTime),
+      formatTimeForCopy(shift.lunchStartTime),
     ].join("\t");
 
     try {
@@ -84,13 +100,13 @@ const ClockActionButtons = () => {
   };
 
   const handleCopyPostLunch = async () => {
-    if (!currentShift) return;
+    if (!shift) return;
 
     const postLunchData = [
-      formatTimeForCopy(currentShift.lunchEndTime),
-      formatTimeForCopy(currentShift.secondBreakStartTime),
-      formatTimeForCopy(currentShift.secondBreakEndTime),
-      formatTimeForCopy(currentShift.clockOutTime),
+      formatTimeForCopy(shift.lunchEndTime),
+      formatTimeForCopy(shift.secondBreakStartTime),
+      formatTimeForCopy(shift.secondBreakEndTime),
+      formatTimeForCopy(shift.clockOutTime),
     ].join("\t");
 
     try {
@@ -101,17 +117,15 @@ const ClockActionButtons = () => {
   };
 
   const handleClockInClick = async () => {
-    if (!currentEmployee) return;
-    await updateEmployeeShift(currentEmployee, currentShift, {
+    if (!employee) return;
+    await updateShiftAction({
       isClockedIn: true,
     });
   };
 
   const handleClockOutClick = async () => {
-    if (!currentEmployee) return;
-    await updateEmployeeShift(
-      currentEmployee,
-      currentShift,
+    if (!employee) return;
+    await updateShiftAction(
       {
         isClockedIn: false,
       },
@@ -122,65 +136,51 @@ const ClockActionButtons = () => {
   };
 
   const handleFirstBreakClick = async () => {
-    if (!currentEmployee) return;
-    await updateEmployeeShift(
-      currentEmployee,
-      currentShift,
+    if (!employee) return;
+    await updateShiftAction(
       {
-        isOnFirstBreak: !currentEmployee?.isOnFirstBreak,
+        isOnFirstBreak: !employee?.isOnFirstBreak,
       },
       {
-        firstBreakStartTime: !currentEmployee?.isOnFirstBreak
-          ? new Date()
-          : undefined,
-        firstBreakEndTime: currentEmployee?.isOnFirstBreak
-          ? new Date()
-          : undefined,
+        firstBreakStartTime: !employee?.isOnFirstBreak ? new Date() : undefined,
+        firstBreakEndTime: employee?.isOnFirstBreak ? new Date() : undefined,
       }
     );
   };
 
   const handleLunchClick = async () => {
-    if (!currentEmployee) return;
-    await updateEmployeeShift(
-      currentEmployee,
-      currentShift,
+    if (!employee) return;
+    await updateShiftAction(
       {
-        isOnLunchBreak: !currentEmployee?.isOnLunchBreak,
+        isOnLunchBreak: !employee?.isOnLunchBreak,
       },
       {
-        lunchStartTime: !currentEmployee?.isOnLunchBreak
-          ? new Date()
-          : undefined,
-        lunchEndTime: currentEmployee?.isOnLunchBreak ? new Date() : undefined,
+        lunchStartTime: !employee?.isOnLunchBreak ? new Date() : undefined,
+        lunchEndTime: employee?.isOnLunchBreak ? new Date() : undefined,
       }
     );
   };
 
   const handleSecondBreakClick = async () => {
-    if (!currentEmployee) return;
-    await updateEmployeeShift(
-      currentEmployee,
-      currentShift,
+    if (!employee) return;
+    await updateShiftAction(
       {
-        isOnSecondBreak: !currentEmployee?.isOnSecondBreak,
+        isOnSecondBreak: !employee?.isOnSecondBreak,
       },
       {
-        secondBreakStartTime: !currentEmployee?.isOnSecondBreak
+        secondBreakStartTime: !employee?.isOnSecondBreak
           ? new Date()
           : undefined,
-        secondBreakEndTime: currentEmployee?.isOnSecondBreak
-          ? new Date()
-          : undefined,
+        secondBreakEndTime: employee?.isOnSecondBreak ? new Date() : undefined,
       }
     );
   };
 
   return (
     <>
-      {error && (
+      {(isShiftUpdateError || employeeError || shiftError) && (
         <Alert color="red" title="Error">
-          <Text>{error}</Text>
+          <Text>{isShiftUpdateError || employeeError || shiftError}</Text>
         </Alert>
       )}
       <Group justify="space-between" pos="relative">
@@ -191,9 +191,7 @@ const ClockActionButtons = () => {
         />
 
         <Button
-          disabled={
-            currentEmployee?.isClockedIn || isLoading || isShiftCompleted
-          }
+          disabled={employee?.isClockedIn || isLoading || isShiftCompleted}
           onClick={handleClockInClick}
           color="green"
         >
@@ -201,44 +199,42 @@ const ClockActionButtons = () => {
         </Button>
         <Button
           disabled={
-            !currentEmployee?.isClockedIn ||
+            !employee?.isClockedIn ||
             isLoading ||
             isShiftCompleted ||
             isFirstBreakCompleted
           }
           onClick={handleFirstBreakClick}
-          color={currentEmployee?.isOnFirstBreak ? "purple" : "yellow"}
+          color={employee?.isOnFirstBreak ? "purple" : "yellow"}
         >
-          First Break {currentEmployee?.isOnFirstBreak ? "End" : "Start"}
+          First Break {employee?.isOnFirstBreak ? "End" : "Start"}
         </Button>
         <Button
           disabled={
-            !currentEmployee?.isClockedIn ||
+            !employee?.isClockedIn ||
             isLoading ||
             isShiftCompleted ||
             isLunchBreakCompleted
           }
           onClick={handleLunchClick}
-          color={currentEmployee?.isOnLunchBreak ? "orange" : "blue"}
+          color={employee?.isOnLunchBreak ? "orange" : "blue"}
         >
-          Lunch {currentEmployee?.isOnLunchBreak ? "End" : "Start"}
+          Lunch {employee?.isOnLunchBreak ? "End" : "Start"}
         </Button>
         <Button
           disabled={
-            !currentEmployee?.isClockedIn ||
+            !employee?.isClockedIn ||
             isLoading ||
             isShiftCompleted ||
             isSecondBreakCompleted
           }
           onClick={handleSecondBreakClick}
-          color={currentEmployee?.isOnSecondBreak ? "purple" : "yellow"}
+          color={employee?.isOnSecondBreak ? "purple" : "yellow"}
         >
-          Second Break {currentEmployee?.isOnSecondBreak ? "End" : "Start"}
+          Second Break {employee?.isOnSecondBreak ? "End" : "Start"}
         </Button>
         <Button
-          disabled={
-            !currentEmployee?.isClockedIn || isLoading || isShiftCompleted
-          }
+          disabled={!employee?.isClockedIn || isLoading || isShiftCompleted}
           onClick={handleClockOutClick}
           color="red"
         >
@@ -249,7 +245,7 @@ const ClockActionButtons = () => {
       {/* Copy Buttons */}
       <Group justify="center" mt="md">
         <Button
-          disabled={!currentShift || isLoading}
+          disabled={!shift || isLoading}
           onClick={handleCopyPreLunch}
           color="gray"
           variant="outline"
@@ -257,7 +253,7 @@ const ClockActionButtons = () => {
           Copy Pre Lunch
         </Button>
         <Button
-          disabled={!currentShift || isLoading}
+          disabled={!shift || isLoading}
           onClick={handleCopyPostLunch}
           color="gray"
           variant="outline"
