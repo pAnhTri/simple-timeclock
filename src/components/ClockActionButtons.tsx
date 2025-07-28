@@ -29,9 +29,6 @@ const ClockActionButtons = () => {
     updateShiftAction,
   } = useShiftTodayUpdate(payload?.id as string);
 
-  console.log("shift:", shift);
-  console.log("employee:", employee);
-
   const isLoading = isEmployeeLoading || isShiftLoading || isShiftUpdateLoading;
   const isShiftCompleted = !!shift?.clockInTime && !!shift?.clockOutTime;
 
