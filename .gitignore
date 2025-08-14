@@ -43,3 +43,16 @@ next-env.d.ts
 /src/lib/prisma/generated
 
 prisma/generated/prisma
+
+# python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/

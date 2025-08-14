@@ -2,7 +2,7 @@
 
 import { shiftValidator } from "@/lib/validators/shift";
 import { PrismaClient, Shift } from "prisma/generated/prisma";
-import { prismaActionWrapper } from "./utility";
+import { getPayPeriodFromExcel, prismaActionWrapper } from "./utility";
 
 const prisma = new PrismaClient();
 
@@ -47,6 +47,30 @@ export const getEmployeeShiftsByDateRange = async (
   }
 
   return returnValues;
+};
+
+export const getShiftsByEmployeeIdInPayPeriod = async (
+  employeeId: string
+): Promise<Shift[]> => {
+  return await prismaActionWrapper<Shift[]>(async () => {
+    const payPeriod = await getPayPeriodFromExcel();
+
+    const { start_date, end_date } = payPeriod;
+
+    const shifts = await prisma.shift.findMany({
+      where: {
+        employeeId,
+        date: {
+          gte: new Date(start_date),
+          lte: new Date(end_date),
+        },
+      },
+      orderBy: {
+        date: "asc",
+      },
+    });
+    return shifts;
+  });
 };
 
 export const createShiftByEmployeeId = async (

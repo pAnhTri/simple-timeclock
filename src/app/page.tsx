@@ -7,6 +7,7 @@ import { isFlaskConnected } from "@/lib/utils/actions/flask";
 import AuthHydrater from "@/components/AuthHydrater";
 import HomeActionButtons from "@/components/HomeActionButtons";
 import ClockWrapper from "@/components/Clock/ClockWrapper";
+import GenerateTimesheetButton from "@/components/GenerateTimesheetButton";
 
 export default async function Page() {
   const { isConnected } = await isFlaskConnected();
@@ -39,6 +40,7 @@ export default async function Page() {
           <EmployeeShiftTable />
           {/* Clock Action Buttons */}
           <ClockActionButtons />
+          <GenerateTimesheetButton />
         </Stack>
       </div>
     </>
