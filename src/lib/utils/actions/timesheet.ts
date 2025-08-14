@@ -22,8 +22,8 @@ export const downloadTimesheetAction = async (): Promise<{
     // Check if the file exists and read it
     const fileBuffer = await readFile(timesheetPath);
 
-    // Create a blob from the buffer
-    const blob = new Blob([fileBuffer], {
+    // Create a blob from the buffer - convert Buffer to Uint8Array for compatibility
+    const blob = new Blob([new Uint8Array(fileBuffer)], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     });
 
