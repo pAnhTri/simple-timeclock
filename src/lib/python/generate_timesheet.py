@@ -2,6 +2,7 @@ import os
 import shutil
 import sys
 import json
+import datetime
 import openpyxl
 
 from get_workbook_path import get_workbook_path
@@ -24,7 +25,8 @@ def fill_cells(
     worksheet: openpyxl.worksheet.worksheet.Worksheet, parsed_excel_rows: dict
 ):
     for cell_index, cell_value in parsed_excel_rows.items():
-        worksheet[cell_index] = cell_value
+        parsed_cell_value = datetime.datetime.strptime(cell_value, "%I:%M %p").time() if cell_value else None
+        worksheet[cell_index] = parsed_cell_value
 
 
 if __name__ == "__main__":
