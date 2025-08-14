@@ -26,7 +26,9 @@ const Employee = () => {
 
   return (
     <Group justify="center" align="center" gap="md">
-      <Title order={2}>{employee?.name}</Title>
+      <Title order={2} className="text-lg md:text-2xl text-center">
+        {employee?.name}
+      </Title>
       {isValidating && <Loader size="xl" />}
     </Group>
   );

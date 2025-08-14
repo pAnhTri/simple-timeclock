@@ -15,7 +15,7 @@ const Clock = ({
   }, []);
 
   return (
-    <p className={cn("text-2xl font-bold", className)} {...props}>
+    <p className={cn("text-xl md:text-2xl font-bold", className)} {...props}>
       {time.toLocaleTimeString()}
     </p>
   );

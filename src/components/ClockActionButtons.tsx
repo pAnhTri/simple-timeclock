@@ -180,7 +180,7 @@ const ClockActionButtons = () => {
           <Text>{isShiftUpdateError || employeeError || shiftError}</Text>
         </Alert>
       )}
-      <Group justify="space-between" pos="relative">
+      <Group justify="space-between" pos="relative" gap="xs" wrap="wrap">
         <LoadingOverlay
           visible={isLoading}
           zIndex={1000}
@@ -191,6 +191,8 @@ const ClockActionButtons = () => {
           disabled={employee?.isClockedIn || isLoading || isShiftCompleted}
           onClick={handleClockInClick}
           color="green"
+          size="sm"
+          className="flex-1 min-w-[120px]"
         >
           Clock In
         </Button>
@@ -203,6 +205,8 @@ const ClockActionButtons = () => {
           }
           onClick={handleFirstBreakClick}
           color={employee?.isOnFirstBreak ? "purple" : "yellow"}
+          size="sm"
+          className="flex-1 min-w-[120px]"
         >
           First Break {employee?.isOnFirstBreak ? "End" : "Start"}
         </Button>
@@ -215,6 +219,8 @@ const ClockActionButtons = () => {
           }
           onClick={handleLunchClick}
           color={employee?.isOnLunchBreak ? "orange" : "blue"}
+          size="sm"
+          className="flex-1 min-w-[120px]"
         >
           Lunch {employee?.isOnLunchBreak ? "End" : "Start"}
         </Button>
@@ -227,6 +233,8 @@ const ClockActionButtons = () => {
           }
           onClick={handleSecondBreakClick}
           color={employee?.isOnSecondBreak ? "purple" : "yellow"}
+          size="sm"
+          className="flex-1 min-w-[120px]"
         >
           Second Break {employee?.isOnSecondBreak ? "End" : "Start"}
         </Button>
@@ -234,30 +242,34 @@ const ClockActionButtons = () => {
           disabled={!employee?.isClockedIn || isLoading || isShiftCompleted}
           onClick={handleClockOutClick}
           color="red"
+          size="sm"
+          className="flex-1 min-w-[120px]"
         >
           Clock Out
         </Button>
       </Group>
 
-      {/* Copy Buttons */}
-      <Group justify="center" mt="md">
-        <Button
-          disabled={!shift || isLoading}
-          onClick={handleCopyPreLunch}
-          color="gray"
-          variant="outline"
-        >
-          Copy Pre Lunch
-        </Button>
-        <Button
-          disabled={!shift || isLoading}
-          onClick={handleCopyPostLunch}
-          color="gray"
-          variant="outline"
-        >
-          Copy Post Lunch
-        </Button>
-      </Group>
+      {/* Copy Buttons - Hidden on mobile */}
+      <div className="hidden md:block">
+        <Group justify="center" mt="md">
+          <Button
+            disabled={!shift || isLoading}
+            onClick={handleCopyPreLunch}
+            color="gray"
+            variant="outline"
+          >
+            Copy Pre Lunch
+          </Button>
+          <Button
+            disabled={!shift || isLoading}
+            onClick={handleCopyPostLunch}
+            color="gray"
+            variant="outline"
+          >
+            Copy Post Lunch
+          </Button>
+        </Group>
+      </div>
     </>
   );
 };

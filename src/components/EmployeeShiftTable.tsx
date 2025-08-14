@@ -2,7 +2,7 @@
 
 import { useShiftToday } from "@/lib/utils/hooks";
 import { useAuthStore } from "@/lib/zustand";
-import { Alert, LoadingOverlay, Skeleton, Table, Text } from "@mantine/core";
+import { Alert, LoadingOverlay, Skeleton, Table, Text, ScrollArea } from "@mantine/core";
 import { format } from "date-fns";
 import { useMemo } from "react";
 
@@ -53,7 +53,7 @@ const EmployeeShiftTable = () => {
     };
   }, [shift]);
 
-  if (isLoading) return <Skeleton height={20} width={500} />;
+  if (isLoading) return <Skeleton height={20} width="100%" className="max-w-md" />;
 
   if (error)
     return (
@@ -62,20 +62,23 @@ const EmployeeShiftTable = () => {
       </Alert>
     );
 
-  if (!shift) return <Text>No shift found! Please clock in first.</Text>;
+  if (!shift) return <Text className="text-center">No shift found! Please clock in first.</Text>;
 
   return (
-    <div className="relative">
+    <div className="relative w-full">
       <LoadingOverlay visible={isValidating} overlayProps={{ blur: 2 }} />
-      <Table
-        striped
-        highlightOnHover
-        data={tableData}
-        withTableBorder
-        classNames={{
-          td: "text-center",
-        }}
-      />
+      <ScrollArea w="100%" type="auto">
+        <Table
+          striped
+          highlightOnHover
+          data={tableData}
+          withTableBorder
+          classNames={{
+            td: "text-center text-xs md:text-sm",
+            th: "text-center text-xs md:text-sm",
+          }}
+        />
+      </ScrollArea>
     </div>
   );
 };

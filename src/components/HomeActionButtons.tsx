@@ -17,12 +17,14 @@ const HomeActionButtons = ({ isConnected }: HomeActionButtonsProps) => {
 
   return (
     <Affix position={{ top: 20, right: 20 }}>
-      <Group p="xs">
+      <Group p="xs" gap="xs">
         {/* Logout Button */}
         <Button
           onClick={async () => await logoutAction()}
           loading={isLoading}
           color="red"
+          size="sm"
+          className="text-xs md:text-sm"
         >
           Logout
         </Button>
@@ -31,13 +33,18 @@ const HomeActionButtons = ({ isConnected }: HomeActionButtonsProps) => {
             component={Link}
             href="/settings"
             color="gray"
-            size="lg"
+            size="md"
             variant="subtle"
           >
             <FaGear />
           </ActionIcon>
         )}
-        {isConnected && <OpenExcel />}
+        {/* OpenExcel Button - Hidden on mobile */}
+        {isConnected && (
+          <div className="hidden md:block">
+            <OpenExcel />
+          </div>
+        )}
       </Group>
     </Affix>
   );
