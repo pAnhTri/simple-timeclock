@@ -99,3 +99,40 @@ export const updatePayPeriodInExcel = async (): Promise<void> => {
     });
   });
 };
+
+export const generateExcelTimesheet = async (
+  excelRows: string
+): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const pythonScriptPath = "src/lib/python/generate_timesheet.py";
+
+    const isWindows = platform() === "win32";
+    const venvPythonPath = isWindows
+      ? join(process.cwd(), ".venv", "Scripts", "python.exe")
+      : join(process.cwd(), ".venv", "bin", "python");
+
+    const pythonProcess = spawn(venvPythonPath, [pythonScriptPath, excelRows], {
+      stdio: ["pipe", "pipe", "pipe"],
+    });
+
+    pythonProcess.stdout.on("data", (data) => {
+      console.log(data.toString());
+    });
+
+    pythonProcess.stderr.on("data", (data) => {
+      console.error(data.toString());
+    });
+
+    pythonProcess.on("close", (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`Python script failed with code ${code}`));
+      }
+    });
+
+    pythonProcess.on("error", (error) => {
+      reject(new Error(`Failed to start Python process: ${error.message}`));
+    });
+  });
+};
