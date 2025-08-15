@@ -1,7 +1,14 @@
 "use client";
 
 import { useAuthStore } from "@/lib/zustand";
-import { Button, Group, LoadingOverlay, Text } from "@mantine/core";
+import {
+  Button,
+  Flex,
+  Group,
+  LoadingOverlay,
+  Stack,
+  Text,
+} from "@mantine/core";
 import {
   useEmployee,
   useShiftToday,
@@ -180,7 +187,7 @@ const ClockActionButtons = () => {
           <Text>{isShiftUpdateError || employeeError || shiftError}</Text>
         </Alert>
       )}
-      <Group justify="space-between" pos="relative" gap="xs" wrap="wrap">
+      <Stack justify="space-between" pos="relative" gap="xs">
         <LoadingOverlay
           visible={isLoading}
           zIndex={1000}
@@ -192,62 +199,64 @@ const ClockActionButtons = () => {
           onClick={handleClockInClick}
           color="green"
           size="sm"
-          className="flex-1 min-w-[120px]"
         >
           Clock In
         </Button>
-        <Button
-          disabled={
-            !employee?.isClockedIn ||
-            isLoading ||
-            isShiftCompleted ||
-            isFirstBreakCompleted
-          }
-          onClick={handleFirstBreakClick}
-          color={employee?.isOnFirstBreak ? "purple" : "yellow"}
-          size="sm"
-          className="flex-1 min-w-[120px]"
+        <Flex
+          justify="space-between"
+          wrap="wrap"
+          direction={{ base: "column", sm: "row" }}
+          gap="xs"
         >
-          First Break {employee?.isOnFirstBreak ? "End" : "Start"}
-        </Button>
-        <Button
-          disabled={
-            !employee?.isClockedIn ||
-            isLoading ||
-            isShiftCompleted ||
-            isLunchBreakCompleted
-          }
-          onClick={handleLunchClick}
-          color={employee?.isOnLunchBreak ? "orange" : "blue"}
-          size="sm"
-          className="flex-1 min-w-[120px]"
-        >
-          Lunch {employee?.isOnLunchBreak ? "End" : "Start"}
-        </Button>
-        <Button
-          disabled={
-            !employee?.isClockedIn ||
-            isLoading ||
-            isShiftCompleted ||
-            isSecondBreakCompleted
-          }
-          onClick={handleSecondBreakClick}
-          color={employee?.isOnSecondBreak ? "purple" : "yellow"}
-          size="sm"
-          className="flex-1 min-w-[120px]"
-        >
-          Second Break {employee?.isOnSecondBreak ? "End" : "Start"}
-        </Button>
+          <Button
+            disabled={
+              !employee?.isClockedIn ||
+              isLoading ||
+              isShiftCompleted ||
+              isFirstBreakCompleted
+            }
+            onClick={handleFirstBreakClick}
+            color={employee?.isOnFirstBreak ? "purple" : "yellow"}
+            size="sm"
+          >
+            First Break {employee?.isOnFirstBreak ? "End" : "Start"}
+          </Button>
+          <Button
+            disabled={
+              !employee?.isClockedIn ||
+              isLoading ||
+              isShiftCompleted ||
+              isLunchBreakCompleted
+            }
+            onClick={handleLunchClick}
+            color={employee?.isOnLunchBreak ? "orange" : "blue"}
+            size="sm"
+          >
+            Lunch {employee?.isOnLunchBreak ? "End" : "Start"}
+          </Button>
+          <Button
+            disabled={
+              !employee?.isClockedIn ||
+              isLoading ||
+              isShiftCompleted ||
+              isSecondBreakCompleted
+            }
+            onClick={handleSecondBreakClick}
+            color={employee?.isOnSecondBreak ? "purple" : "yellow"}
+            size="sm"
+          >
+            Second Break {employee?.isOnSecondBreak ? "End" : "Start"}
+          </Button>
+        </Flex>
         <Button
           disabled={!employee?.isClockedIn || isLoading || isShiftCompleted}
           onClick={handleClockOutClick}
           color="red"
           size="sm"
-          className="flex-1 min-w-[120px]"
         >
           Clock Out
         </Button>
-      </Group>
+      </Stack>
 
       {/* Copy Buttons - Hidden on mobile */}
       <div className="hidden md:block">
