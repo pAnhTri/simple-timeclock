@@ -3,6 +3,7 @@
 import { shiftValidator } from "@/lib/validators/shift";
 import { PrismaClient, Shift } from "prisma/generated/prisma";
 import { getPayPeriodFromExcel, prismaActionWrapper } from "./utility";
+import { endOfDay } from "date-fns";
 
 const prisma = new PrismaClient();
 
@@ -57,12 +58,14 @@ export const getShiftsByEmployeeIdInPayPeriod = async (
 
     const { start_date, end_date } = payPeriod;
 
+    const endDate = new Date(end_date);
+
     const shifts = await prisma.shift.findMany({
       where: {
         employeeId,
         date: {
           gte: new Date(start_date),
-          lte: new Date(end_date),
+          lte: endOfDay(endDate),
         },
       },
       orderBy: {
