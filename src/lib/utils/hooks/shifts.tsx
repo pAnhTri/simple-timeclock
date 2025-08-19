@@ -2,13 +2,15 @@
 
 import useSWR from "swr";
 import { getEmployeeShiftToday, updateEmployee } from "../actions/employees";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Employee, Shift } from "prisma/generated/prisma";
 import { useEmployee } from "./employees";
 import {
   createShiftByEmployeeId,
   updateShiftByEmployeeId,
 } from "../actions/shifts";
+import { useEmployeeStore } from "@/lib/zustand";
+import { differenceInMinutes } from "date-fns";
 
 export const useShiftToday = (
   employeeId: string,
@@ -26,6 +28,52 @@ export const useShiftToday = (
     {
       revalidateOnMount,
     }
+  );
+
+  const setHasWorkedEightHours = useEmployeeStore(
+    (state) => state.setHasWorkedEightHours
+  );
+
+  useEffect(
+    () => {
+      let firstBreakTime =
+        shift?.firstBreakEndTime && shift?.firstBreakStartTime
+          ? differenceInMinutes(
+              shift.firstBreakEndTime,
+              shift.firstBreakStartTime
+            )
+          : 0;
+      let secondBreakTime =
+        shift?.secondBreakEndTime && shift?.secondBreakStartTime
+          ? differenceInMinutes(
+              shift.secondBreakEndTime,
+              shift.secondBreakStartTime
+            )
+          : 0;
+      const lunchTime =
+        shift?.lunchEndTime && shift?.lunchStartTime
+          ? differenceInMinutes(shift.lunchEndTime, shift.lunchStartTime)
+          : 0;
+
+      if (firstBreakTime > 10) firstBreakTime -= 10;
+      else firstBreakTime = 0;
+
+      if (secondBreakTime > 10) secondBreakTime -= 10;
+      else secondBreakTime = 0;
+
+      const currentTime = new Date();
+
+      const totalTimeWorked = shift?.clockInTime
+        ? differenceInMinutes(currentTime, shift.clockInTime) -
+          firstBreakTime -
+          secondBreakTime -
+          lunchTime
+        : 0;
+
+      setHasWorkedEightHours(totalTimeWorked >= 480);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [shift, isValidating]
   );
 
   return {
